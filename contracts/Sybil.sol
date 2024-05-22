@@ -1,19 +1,20 @@
 // SPDX-License-Identifier: GPL-3.0
 
-pragma solidity >=0.8.2 <0.9.0;
+pragma solidity 0.8.24;
 
-contract Sybil { 
+contract Sybil {
+    // Each batch forged will have the root state of the 'balance tree'
+    bytes32[] stateRoots;
     uint number_nodes;
-    mapping (uint => address) nodes;
-    mapping (address => uint) deposits;
-    mapping (address => uint) totalStaked;
-    mapping (address => uint) scores;
-    mapping (address => mapping (address => uint)) stakes;
+    mapping(uint => address) nodes;
+    mapping(address => uint) deposits;
+    mapping(address => uint) totalStaked;
+    mapping(address => uint) scores;
+    mapping(address => mapping(address => uint)) stakes;
 
-    constructor()  {
-      number_nodes = 0;  
+    constructor() {
+        number_nodes = 0;
     }
-
 
     function addDeposit() external payable {
         deposits[msg.sender] += msg.value;
@@ -33,16 +34,7 @@ contract Sybil {
         totalStaked[msg.sender] -= amount;
     }
 
-
-    function calculateScores() public {
-
-    }
-
-
-
-
-
-
+    function calculateScores() public {}
 
     function getDeposit(address node) public view returns (uint) {
         return deposits[node];
@@ -55,11 +47,14 @@ contract Sybil {
     function getNumbernodes() public view returns (uint) {
         return number_nodes;
     }
-    function getStake(address source, address target) public view returns (uint) {
+    function getStake(
+        address source,
+        address target
+    ) public view returns (uint) {
         return stakes[source][target];
     }
 
-    function getNodes() public view returns (address[] memory){
+    function getNodes() public view returns (address[] memory) {
         address[] memory ret = new address[](number_nodes);
         for (uint i = 0; i < number_nodes; i++) {
             ret[i] = nodes[i];
@@ -67,7 +62,7 @@ contract Sybil {
         return ret;
     }
 
-    function getTotalstakeds() public view returns (uint[] memory){
+    function getTotalstakeds() public view returns (uint[] memory) {
         uint[] memory ret = new uint[](number_nodes);
         for (uint i = 0; i < number_nodes; i++) {
             address add = nodes[i];
@@ -76,7 +71,7 @@ contract Sybil {
         return ret;
     }
 
-    function getDeposits() public view returns (uint[] memory){
+    function getDeposits() public view returns (uint[] memory) {
         uint[] memory ret = new uint[](number_nodes);
         for (uint i = 0; i < number_nodes; i++) {
             address add = nodes[i];
@@ -85,22 +80,21 @@ contract Sybil {
         return ret;
     }
 
-    function getStakes() public view returns (uint[] memory){
-        uint[] memory ret = new uint[](number_nodes*number_nodes);
+    function getStakes() public view returns (uint[] memory) {
+        uint[] memory ret = new uint[](number_nodes * number_nodes);
         for (uint i = 0; i < number_nodes; i++) {
             for (uint j = 0; j < number_nodes; j++) {
-                ret[(i*number_nodes)+j]=stakes[nodes[i]][nodes[j]]; 
+                ret[(i * number_nodes) + j] = stakes[nodes[i]][nodes[j]];
             }
         }
         return ret;
     }
 
-
     function getScore(address node) public view returns (uint) {
         return scores[node];
     }
 
-    function getScores() public view returns (uint[] memory){
+    function getScores() public view returns (uint[] memory) {
         uint[] memory ret = new uint[](number_nodes);
         for (uint i = 0; i < number_nodes; i++) {
             address add = nodes[i];
@@ -108,5 +102,4 @@ contract Sybil {
         }
         return ret;
     }
-
 }
